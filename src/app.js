@@ -5,6 +5,7 @@ import helmet from 'helmet'
 import { resolve } from 'path'
 import * as Sentry from '@sentry/node'
 import Youch from 'youch'
+import rateLimit from './config/rate-limit'
 import 'express-async-errors'
 import routes from './routes'
 import sentryConfig from './config/sentry'
@@ -31,6 +32,10 @@ class App {
       '/files',
       express.static(resolve(__dirname, '..', 'uploads'))
     )
+
+    if (process.env.NODE_ENV !== 'development') {
+      this.server.use(rateLimit)
+    }
   }
 
   routes() {
